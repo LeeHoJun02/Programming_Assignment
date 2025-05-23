@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
+#include <time.h>
 #include <stdbool.h>
 
-#define ROOM_WIDTH 4
+#define ROOM_WIDTH 10
 #define HME_POS 1
 #define BWL_PO (ROOM_WIDTH -2)
 
@@ -15,7 +16,12 @@ int main(void) {
 	int cat = HME_POS;
 	int previousCat = HME_POS;
 	int soupCount = 0;
+	int cp = 0;
+	int feel = 3;
+	boolean hasTower = false;
+	boolean hasToy = false;
 
+	srand(time(NULL));
 	printf("****야옹이와 스프**** \n");
 	printf(" /\\_/\\ \n");
 	printf(" / o.o \\ \n");
@@ -32,6 +38,23 @@ int main(void) {
 	while (true) {
 		printf("==================== 현재 상태 ===================\n");
 		printf("현재까지 만든 수프: %d개\n", soupCount);
+		printf("CP :%d포인트\n", cp);
+		printf("쫀덕이의 기분(0~3): %d\n", feel);
+		switch (feel)
+		{
+		case 0:
+			printf("기분이매우나쁩니다.\n");
+			break;
+		case 1:
+			printf("심심해합니다.\n");
+			break;
+		case 2:
+			printf("식빵을굽습니다.\n");
+			break;
+		case 3:
+			printf("골골송을부릅니다.\n");
+			break;
+		}
 		printf("집사와의 관계(0~4): %d\n", realation);
 		switch (realation) {
 		case 0:
@@ -51,55 +74,47 @@ int main(void) {
 			break;
 		}
 		printf("==================================================\n");
+		r = rand() % 6 + 1;
+		printf("%d-%d: 주사위 눈이 %d이하이면 그냥 기분이 나빠집니다.\n", r, realation, r-realation);
+		printf("주사위를 굴립니다. 또르르...\n");
+		printf("%d이(가) 나왔습니다.\n", r);
+		if (r <= 6 - realation) {
+			printf("아무이유없이기분이나빠집니다. 고양이니까?\n");
+			printf("%s의 기분이 나빠집니다: %d->%d\n", name, feel, feel - 1);
+			if (feel > 0) {
+				feel -= 1;
+			}
+		}
 
-		printf("%s 이동: 집사와 친밀할수록 냄비 쪽으로 갈 확률이 높아집니다.\n", name);
-		printf("주사위 눈이 3 이상이면 냄비 쪽으로 이동합니다.\n");
-		printf("주사위를 굴립니다. 또르륵...\n");
-		r = rand() % 7;
-		printf("%d이(가) 나왔습니다!\n", r);
-
-		if (r > 6 - realation) {
-			printf("냄비 쪽으로 움직입니다.\n");
+		if (feel == 0) {
+			printf("기분이 매우 나쁜 %s은(는) 집으로 향합니다.\n", name);
+			if (cat > HME_POS) {
+				cat--;
+			}
+		}
+		else if (feel == 1) {
+			if (!hasTower) {
+				printf("%s은(는) 심심해서 스크래처 쪽으로 이동합니다.\n", name);
+				if (cat < BWL_PO) {
+					cat++;
+				}
+			}
+			else {
+				printf("놀거리가 없어서 기분이 매우 나빠집니다.\n");
+				feel--;
+			}
+		}
+		else if (feel == 2) {
+			printf("%s은(는) 기분 좋게 식빵을 굽고 있습니다.\n", name);
+		}
+		else if (feel == 3) {
+			printf("%s은(는) 골골송을 부르며 수프를 만들러 갑니다.\n", name);
 			if (cat < ROOM_WIDTH - 1) {
-				previousCat = cat;
 				cat++;
 			}
-			else {
-				previousCat = -1; 
-			}
-			if (cat == ROOM_WIDTH - 1) {
-				soup = rand() % 3;
-				if (soup == 0) {
-					printf("%s이(가) 감자수프를 만들었습니다!\n",name);
-					soupCount++;
-					printf("현재 만든 수프 개수: %d\n",soupCount);
-				}
-				else if (soup == 1) {
-					printf("%s이(가) 양송이수프를 만들었습니다!\n", name);
-					soupCount++;
-					printf("현재 만든 수프 개수: %d\n", soupCount);
-				}
-				else {
-					printf("%s이(가) 브로콜리수프를 만들었습니다!\n", name);
-					soupCount++;
-					printf("현재 만든 수프 개수: %d\n", soupCount);
-				}
-			}
 		}
+		previousCat = cat;
 
-		else {
-			printf("집 쪽으로 움직입니다.\n");
-			if (cat > HME_POS) {
-				previousCat = cat;
-				cat--;
-				if (cat == 1) {
-					printf("%s은(는) 자신의 집에서 편안함을 느낍니다. ", name);
-				}
-			}
-			else {
-				previousCat = -1;
-			}
-		}
 		Sleep(500);
 		printf("\n");
 
