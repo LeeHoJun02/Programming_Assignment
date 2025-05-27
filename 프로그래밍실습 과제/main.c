@@ -19,7 +19,7 @@ int main(void) {
 	int cp = 0;
 	int cpGain = 0;
 	int feel = 3;
-	boolean hasTower = true;
+	boolean hasTower = false;
 	boolean hasToy = false;
 	boolean house = false;
 	boolean mouseToy = false;
@@ -109,7 +109,7 @@ int main(void) {
 			}
 		}
 		else if (feel == 1) {
-			if (!hasTower) {
+			if (hasToy) {
 				printf("놀거리가 없어서 기분이 매우 나빠집니다.\n");
 				feel--;
 			}
@@ -123,6 +123,7 @@ int main(void) {
 		else if (feel == 2) {
 			printf("%s은(는) 기분 좋게 식빵을 굽고 있습니다.\n", name);
 		}
+
 		else if (feel == 3) {
 			printf("%s은(는) 골골송을 부르며 수프를 만들러 갑니다.\n", name);
 			if (cat < ROOM_WIDTH - 1) {
@@ -199,21 +200,9 @@ int main(void) {
 		printf("어떤 상호작용을 하시겠습니까?\n0. 아무것도 하지 않음 \n1. 긁어주기\n2. 상점\n");
 		if (mouseToy) {
 			printf("3. 장난감 쥐로 놀아주기\n");
-			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
-			printf("%s의 기분이 조금 좋아졌습니다.", name);
-			feel++;
-			if (r >= 4) {
-				realation++;
-			}
 		}
 		if (razerToy) {
 			printf("4. 레이저 포인터로 놀아주기\n");
-			printf("레이저 포인터로 %s와 신나게 놀아주었습니다.\n", name);
-			printf("%s의 기분이 꽤 좋아졌습니다.", name);
-			feel += 2;
-			if (r >= 2) {
-				realation++;
-			}
 		}
 		printf(">>");
 
@@ -300,17 +289,89 @@ int main(void) {
 			case 0:
 				break;
 			case 1:
-				mouseToy = true;
+				if (cp >= 1) {
+					if (mouseToy == true) {
+						printf("이미 구매했습니다.\n");
+						break;
+					}
+					printf("장난감 쥐를 구매했습니다.\n");
+					cp -= 1;
+					printf("보유 CP %d 포인트", cp);
+					mouseToy = true;
+				}
+				else {
+					printf("CP가 부족합니다.");
+				}
+				Sleep(500);
+				system("cls");
 				break;
 			case 2:
-				razerToy = true;
+				if (cp >= 2) {
+					if (razerToy == true) {
+						printf("이미 구매했습니다.\n");
+					}
+					printf("레이저 포인트를 구매했습니다.\n");
+					cp -= 2;
+					printf("보유 CP %d 포인트", cp);
+					razerToy = true;
+				
+				}
+				else {
+					printf("CP가 부족합니다.");
+				}
+				Sleep(500);
+				system("cls");
 				break;
 			case 3:
-				hasToy = true;
+				if (cp >= 4) {
+					if (hasToy == true) {
+						printf("이미 구매했습니다.\n");
+					}
+					printf("스크래처를 구매했습니다.\n");
+					cp -= 4;
+					printf("보유 CP %d 포인트", cp);
+					hasToy = true;
+				}
+				else {
+					printf("CP가 부족합니다.");
+				}
+				Sleep(500);
+				system("cls");
 				break;
 			case 4:
-				hasTower = true;
+				if (cp >= 6) {
+					if (hasTower == true) {
+						printf("이미 구매했습니다.\n");
+					}
+					printf("캣타워를 구매했습니다.\n");
+					cp -= 6;
+					printf("보유 CP %d 포인트", cp);
+					hasTower = true;
+				}
+				else {
+					printf("CP가 부족합니다.");
+				}
+				Sleep(500);
+				system("cls");
 				break;
+			}
+		case 3:
+			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
+			printf("%s의 기분이 조금 좋아졌습니다.", name);
+			feel++;
+			if (r >= 4) {
+				realation++;
+			}
+			Sleep(500);
+			system("cls");
+			break;
+
+		case4:
+			printf("레이저 포인터로 %s와 신나게 놀아주었습니다.\n", name);
+			printf("%s의 기분이 꽤 좋아졌습니다.", name);
+			feel += 2;
+			if (r >= 2) {
+				realation++;
 			}
 
 			Sleep(500);
