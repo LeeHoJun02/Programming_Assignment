@@ -198,10 +198,22 @@ int main(void) {
 
 		printf("어떤 상호작용을 하시겠습니까?\n0. 아무것도 하지 않음 \n1. 긁어주기\n2. 상점\n");
 		if (mouseToy) {
-			printf("3. 장난감 주기\n");
+			printf("3. 장난감 쥐로 놀아주기\n");
+			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
+			printf("%s의 기분이 조금 좋아졌습니다.", name);
+			feel++;
+			if (r >= 4) {
+				realation++;
+			}
 		}
 		if (razerToy) {
 			printf("4. 레이저 포인터로 놀아주기\n");
+			printf("레이저 포인터로 %s와 신나게 놀아주었습니다.\n", name);
+			printf("%s의 기분이 꽤 좋아졌습니다.", name);
+			feel += 2;
+			if (r >= 2) {
+				realation++;
+			}
 		}
 		printf(">>");
 
