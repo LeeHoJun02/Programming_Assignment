@@ -6,7 +6,7 @@
 
 #define ROOM_WIDTH 10
 #define HME_POS 1
-#define BWL_PO (ROOM_WIDTH -2)
+#define BWL_PO (ROOM_WIDTH -1)
 
 int main(void) {
 	char name[10];
@@ -19,8 +19,13 @@ int main(void) {
 	int cp = 0;
 	int cpGain = 0;
 	int feel = 3;
+	int width;
+	int height;
+	int scratcher;
+	int catTower;
+	int turn = 0;
 	boolean hasTower = false;
-	boolean hasToy = false;
+	boolean hasScratcher = false;
 	boolean house = false;
 	boolean mouseToy = false;
 	boolean razerToy = false;
@@ -40,6 +45,7 @@ int main(void) {
 	system("cls");
 
 	while (true) {
+		turn++;
 		printf("==================== 현재 상태 ===================\n");
 		printf("현재까지 만든 수프: %d개\n", soupCount);
 		printf("CP :%d포인트\n", cp);
@@ -88,7 +94,17 @@ int main(void) {
 			break;
 		}
 		printf("==================================================\n");
-
+		if (turn == 3) {
+			printf("랜덤 이벤트 발생!");
+			int event = rand() % 3;
+			switch (event)
+			{
+			case 1:
+			case 2:
+			case 3:
+				break;
+			}
+		}
 		//기분에 따른 움직임
 		r = rand() % 6 + 1;
 		printf("%d-%d: 주사위 눈이 %d이하이면 그냥 기분이 나빠집니다.\n", r, realation, r-realation);
@@ -109,9 +125,11 @@ int main(void) {
 			}
 		}
 		else if (feel == 1) {
-			if (hasToy) {
+			if (hasScratcher) {
 				printf("놀거리가 없어서 기분이 매우 나빠집니다.\n");
-				feel--;
+				if (feel > 0) {
+					feel--;
+				}
 			}
 			else {
 				printf("%s은(는) 심심해서 스크래처 쪽으로 이동합니다.\n", name);
@@ -160,28 +178,34 @@ int main(void) {
 
 		Sleep(500);
 		printf("\n");
-
+		
 
 		//집 그리기
-		for (int i = 0; i < 4; i++) {
+		for (height = 0; height < 4; height++) {
 			printf("\n");
-			for (int j = 0; j <= ROOM_WIDTH; j++) {
-				if (i == 0 || i == 3) {
+			for (width = 0; width <= ROOM_WIDTH; width++) {
+				if (height == 0 || height == 3) {
 					printf("#");
 				}
-				else if (j == 0 || j == ROOM_WIDTH) {
+				else if (width == 0 || width == ROOM_WIDTH) {
 					printf("#");
 				}
-				else if (i == 1 && j == 1) {
+				else if (height == 1 && width == 1) {
 					printf("H");
 				}
-				else if (i == 1 && j == ROOM_WIDTH - 1) {
+				else if (height == 1 && width == scratcher && hasScratcher) {
+					printf("S");  
+				}
+				else if (height == 1 && width == catTower && hasTower) {
+					printf("T");  
+				}
+				else if (height == 1 && width == BWL_PO) {
 					printf("B");
 				}
-				else if (i == 2 && j == cat) {
+				else if (height == 2 && width == cat) {
 					printf("C");
 				}
-				else if (i == 2 && j == previousCat && previousCat != cat) {
+				else if (height == 2 && width == previousCat && previousCat != cat) {
 					printf(".");
 				}
 				else {
@@ -190,8 +214,6 @@ int main(void) {
 			}
 
 		}
-
-
 		//상호작용
 		printf("\n");
 		printf("==================================================\n");
@@ -324,13 +346,14 @@ int main(void) {
 				break;
 			case 3:
 				if (cp >= 4) {
-					if (hasToy == true) {
+					if (hasScratcher == true) {
 						printf("이미 구매했습니다.\n");
 					}
 					printf("스크래처를 구매했습니다.\n");
 					cp -= 4;
 					printf("보유 CP %d 포인트", cp);
-					hasToy = true;
+					hasScratcher = true;
+					scratcher = rand() % (ROOM_WIDTH - 2) + 2;
 				}
 				else {
 					printf("CP가 부족합니다.");
@@ -347,6 +370,7 @@ int main(void) {
 					cp -= 6;
 					printf("보유 CP %d 포인트", cp);
 					hasTower = true;
+					catTower = rand() % (ROOM_WIDTH - 2) + 2;
 				}
 				else {
 					printf("CP가 부족합니다.");
@@ -355,6 +379,10 @@ int main(void) {
 				system("cls");
 				break;
 			}
+			Sleep(500);
+			system("cls");
+			break;
+
 		case 3:
 			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
 			printf("%s의 기분이 조금 좋아졌습니다.", name);
@@ -366,7 +394,7 @@ int main(void) {
 			system("cls");
 			break;
 
-		case4:
+		case 4:
 			printf("레이저 포인터로 %s와 신나게 놀아주었습니다.\n", name);
 			printf("%s의 기분이 꽤 좋아졌습니다.", name);
 			feel += 2;
