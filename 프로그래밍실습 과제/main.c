@@ -12,25 +12,27 @@ int main(void) {
 	char name[10];
 	int r;
 	int soup = 0;
-	int realation = 2;
+	int relation = 2;
 	int cat = HME_POS;
-	int previousCat = HME_POS;
+	int previousCat = cat;
 	int soupCount = 0;
 	int cp = 0;
 	int cpGain = 0;
 	int feel = 3;
 	int width;
 	int height;
-	int scratcher;
-	int catTower;
-	int turn = 0;
-	boolean hasTower = false;
-	boolean hasScratcher = false;
-	boolean house = false;
-	boolean mouseToy = false;
-	boolean razerToy = false;
+	int scratcher = 0;
+	int catTower = 0;
+	int gameTurn = 0;
+	int houseTurn = 0;
+	bool hasTower = false;
+	bool hasScratcher = false;
+	bool house = false;
+	bool mouseToy = false;
+	bool razerToy = false;
 
 	srand(time(NULL));
+	//이름 입력
 	printf("****야옹이와 스프**** \n");
 	printf(" /\\_/\\ \n");
 	printf(" / o.o \\ \n");
@@ -44,20 +46,12 @@ int main(void) {
 	Sleep(1000);
 	system("cls");
 
+	//상태 출력
 	while (true) {
-		turn++;
+		gameTurn++;
 		printf("==================== 현재 상태 ===================\n");
 		printf("현재까지 만든 수프: %d개\n", soupCount);
-		printf("CP :%d포인트\n", cp);
-		printf("%s의 기분과 친밀도에 따라서 CP가 %d 포인트 생산되었습니다.\n", name, cpGain);
-		if (feel > 0) {
-			cpGain = (feel - 1) + realation;
-		}
-		else
-		{
-			cpGain = 0 + realation;
-		}
-		cp += cpGain;
+		printf("CP :%d포인트\n", cp);		
 
 		printf("쫀덕이의 기분(0~3): %d\n", feel);
 		switch (feel)
@@ -75,8 +69,8 @@ int main(void) {
 			printf("골골송을부릅니다.\n");
 			break;
 		}
-		printf("집사와의 관계(0~4): %d\n", realation);
-		switch (realation) {
+		printf("집사와의 관계(0~4): %d\n", relation);
+		switch (relation) {
 		case 0:
 			printf("곁에오는것조차싫어합니다\n");
 			break;
@@ -94,23 +88,13 @@ int main(void) {
 			break;
 		}
 		printf("==================================================\n");
-		if (turn == 3) {
-			printf("랜덤 이벤트 발생!");
-			int event = rand() % 3;
-			switch (event)
-			{
-			case 1:
-			case 2:
-			case 3:
-				break;
-			}
-		}
-		//기분에 따른 움직임
+
+		//기분 나빠짐
 		r = rand() % 6 + 1;
-		printf("%d-%d: 주사위 눈이 %d이하이면 그냥 기분이 나빠집니다.\n", r, realation, r-realation);
+		printf("%d-%d: 주사위 눈이 %d이하이면 그냥 기분이 나빠집니다.\n", r, relation, 6 - relation);
 		printf("주사위를 굴립니다. 또르르...\n");
 		printf("%d이(가) 나왔습니다.\n", r);
-		if (r <= 6 - realation) {
+		if (r <= 6 - relation) {
 			printf("아무이유없이기분이나빠집니다. 고양이니까?\n");
 			printf("%s의 기분이 나빠집니다: %d->%d\n", name, feel, feel - 1);
 			if (feel > 0) {
@@ -118,14 +102,28 @@ int main(void) {
 			}
 		}
 
+		//기분에 따른 움직임
+
 		if (feel == 0) {
 			printf("기분이 매우 나쁜 %s은(는) 집으로 향합니다.\n", name);
 			if (cat > HME_POS) {
 				cat--;
 			}
+			if (cat == HME_POS) {
+				if (houseTurn == 0) {
+					printf("%s이(가) 집에 도착했습니다.\n", name);
+					houseTurn++;
+				}
+				if (houseTurn >= 1) {
+					printf("%s이(가) 집에서 휴식을 취합니다.\n", name);
+					if (feel < 3) {
+						feel++;
+					}
+				}
+			}
 		}
 		else if (feel == 1) {
-			if (hasScratcher) {
+			if (!hasScratcher) {
 				printf("놀거리가 없어서 기분이 매우 나빠집니다.\n");
 				if (feel > 0) {
 					feel--;
@@ -135,6 +133,13 @@ int main(void) {
 				printf("%s은(는) 심심해서 스크래처 쪽으로 이동합니다.\n", name);
 				if (cat < BWL_PO) {
 					cat++;
+				}
+				if (cat == scratcher && hasScratcher) {
+					printf("%s이(가) 스크래처에서 긁고 놀았습니다.\n", name);
+					if (feel < 3) {
+						feel++;
+						if (feel > 3) feel = 3;
+					}
 				}
 			}
 		}
@@ -150,7 +155,6 @@ int main(void) {
 		}
 		previousCat = cat;
 
-		//스프 만들기
 		if (cat == ROOM_WIDTH - 1) {
 			soup = rand() % 3;
 			if (soup == 0) {
@@ -170,15 +174,21 @@ int main(void) {
 			}
 		}
 
-		//집에서 기분회복
-		if(cat == HME_POS){
-		
+		if (previousCat == HME_POS && cat != HME_POS) {
+			houseTurn = 0;
 		}
 
+		if (cat == catTower && hasTower) {
+			printf("%s이(가) 캣타워에서 뛰어다닙니다.\n", name);
+			if (feel < 3) {
+				feel += 2;
+				if (feel > 3) feel = 3;
+			}
 
+		}
 		Sleep(500);
 		printf("\n");
-		
+
 
 		//집 그리기
 		for (height = 0; height < 4; height++) {
@@ -194,10 +204,10 @@ int main(void) {
 					printf("H");
 				}
 				else if (height == 1 && width == scratcher && hasScratcher) {
-					printf("S");  
+					printf("S");
 				}
 				else if (height == 1 && width == catTower && hasTower) {
-					printf("T");  
+					printf("T");
 				}
 				else if (height == 1 && width == BWL_PO) {
 					printf("B");
@@ -214,6 +224,7 @@ int main(void) {
 			}
 
 		}
+
 		//상호작용
 		printf("\n");
 		printf("==================================================\n");
@@ -233,7 +244,7 @@ int main(void) {
 		{
 			scanf_s("%d", &input);
 			Sleep(500);
-			if (input == 1 || input == 0|| input == 2) {
+			if (input == 1 || input == 0 || input == 2) {
 				break;
 			}
 			else if (input == 3 && mouseToy) {
@@ -256,16 +267,16 @@ int main(void) {
 			printf("%d이(가) 나왔습니다!\n", r);
 
 			if (r >= 1 && r <= 4) {
-				if (realation > 0) {
+				if (relation > 0) {
 					printf("친밀도는 떨어집니다.\n");
-					realation--;
-					printf("현재 친밀도 : %d\n", realation);
+					relation--;
+					printf("현재 친밀도 : %d\n", relation);
 				}
 			}
 
 			else {
 				printf("다행히 친밀도가 떨어지지 않았습니다.");
-				printf("현재 친밀도 : %d\n", realation);
+				printf("현재 친밀도 : %d\n", relation);
 			}
 			Sleep(500);
 			system("cls");
@@ -279,133 +290,208 @@ int main(void) {
 			int k = rand() % 7;
 			printf("%d이(가) 나왔습니다!\n", k);
 			if (k >= 5) {
-				if (realation <= 4) {
+				if (relation <= 4) {
 					printf("친밀도가 높아집니다.\n");
-					realation++;
-					printf("현재 친밀도 : %d\n", realation);
+					relation++;
+					printf("현재 친밀도 : %d\n", relation);
 				}
 			}
 
 			else {
 				printf("친밀도는 그대로입니다.");
-				printf("현재 친밀도 : %d\n", realation);
+				printf("현재 친밀도 : %d\n", relation);
 			}
 			Sleep(500);
 			system("cls");
 			break;
-		
+
 		case 2:
-			printf("상점에서 물건을 살 수 있습니다.\n어떤 물건을 구매할가요?\n");
-			printf("0. 아무 것도 사지 않는다.\n");
-			printf("1. 장난감 쥐: 1 CP\n");
-			printf("2. 레이저 포인터: 2 CP\n");
-			printf("3. 스크래처: 4 CP\n");
-			printf("4, 캣 타워: 6 CP\n");
-			printf(">>");
-
-			int shopInput;
-			scanf_s("%d", &shopInput);
-
-			switch (shopInput)
-			{
-			case 0:
-				break;
-			case 1:
-				if (cp >= 1) {
-					if (mouseToy == true) {
-						printf("이미 구매했습니다.\n");
-						break;
-					}
-					printf("장난감 쥐를 구매했습니다.\n");
-					cp -= 1;
-					printf("보유 CP %d 포인트", cp);
-					mouseToy = true;
-				}
-				else {
-					printf("CP가 부족합니다.");
-				}
-				Sleep(500);
-				system("cls");
-				break;
-			case 2:
-				if (cp >= 2) {
-					if (razerToy == true) {
-						printf("이미 구매했습니다.\n");
-					}
-					printf("레이저 포인트를 구매했습니다.\n");
-					cp -= 2;
-					printf("보유 CP %d 포인트", cp);
-					razerToy = true;
-				
-				}
-				else {
-					printf("CP가 부족합니다.");
-				}
-				Sleep(500);
-				system("cls");
-				break;
-			case 3:
-				if (cp >= 4) {
-					if (hasScratcher == true) {
-						printf("이미 구매했습니다.\n");
-					}
-					printf("스크래처를 구매했습니다.\n");
-					cp -= 4;
-					printf("보유 CP %d 포인트", cp);
-					hasScratcher = true;
-					scratcher = rand() % (ROOM_WIDTH - 2) + 2;
-				}
-				else {
-					printf("CP가 부족합니다.");
-				}
-				Sleep(500);
-				system("cls");
-				break;
-			case 4:
-				if (cp >= 6) {
-					if (hasTower == true) {
-						printf("이미 구매했습니다.\n");
-					}
-					printf("캣타워를 구매했습니다.\n");
-					cp -= 6;
-					printf("보유 CP %d 포인트", cp);
-					hasTower = true;
-					catTower = rand() % (ROOM_WIDTH - 2) + 2;
-				}
-				else {
-					printf("CP가 부족합니다.");
-				}
-				Sleep(500);
-				system("cls");
-				break;
+			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
+			printf("%s의 기분이 조금 좋아졌습니다.", name);
+			feel++;
+			if (r >= 4) {
+				relation++;
 			}
 			Sleep(500);
 			system("cls");
 			break;
 
 		case 3:
-			printf("장난감 쥐로 %s와 놀아주었습니다.", name);
-			printf("%s의 기분이 조금 좋아졌습니다.", name);
-			feel++;
-			if (r >= 4) {
-				realation++;
-			}
-			Sleep(500);
-			system("cls");
-			break;
-
-		case 4:
 			printf("레이저 포인터로 %s와 신나게 놀아주었습니다.\n", name);
 			printf("%s의 기분이 꽤 좋아졌습니다.", name);
 			feel += 2;
 			if (r >= 2) {
-				realation++;
+				relation++;
 			}
 
 			Sleep(500);
 			system("cls");
 			break;
 		}
+
+		//CP생산
+		printf("%s의 기분과 친밀도에 따라서 CP가 %d 포인트 생산되었습니다.\n", name, cpGain);
+		printf("현재 보유 CP: %d 포인트\n", cp);
+		if (feel > 0) {
+			cpGain = (feel - 1) + relation;
+		}
+		else
+		{
+			cpGain = 0 + relation;
+		}
+		cp += cpGain;
+
+		//상점
+		printf("상점에서 물건을 살 수 있습니다.\n어떤 물건을 구매할가요?\n");
+		printf("0. 아무 것도 사지 않는다.\n");
+		if (mouseToy == false) {
+			printf("1. 장난감 쥐: 1 CP\n");
+		}
+		else {
+			printf("1. 장난감 쥐(품절)\n");
+		}
+		if (razerToy == false) {
+			printf("2. 레이저 포인터: 2 CP\n");
+		}
+		else {
+			printf("2. 레이저 포인터(품절)\n");
+		}
+		if (hasScratcher == false) {
+			printf("3. 스크래처: 4 CP\n");
+		}
+		else {
+			printf("3. 스크래처(품절)\n");
+		}
+		if (hasTower == false) {
+			printf("4. 캣 타워: 6 CP\n");
+		}
+		else {
+			printf("4. 캣 타워(품절)\n");
+		}
+		printf(">>");
+
+		int shopInput;
+		scanf_s("%d", &shopInput);
+
+		switch (shopInput)
+		{
+		case 0:
+			Sleep(500);
+			system("cls");
+			break;
+		case 1:
+			if (cp >= 1) {
+				if (mouseToy == true) {
+					printf("이미 구매했습니다.\n");
+					break;
+				}
+				printf("장난감 쥐를 구매했습니다.\n");
+				cp -= 1;
+				printf("보유 CP %d 포인트", cp);
+				mouseToy = true;
+			}
+			else {
+				printf("CP가 부족합니다.");
+			}
+			Sleep(500);
+			system("cls");
+			break;
+		case 2:
+			if (cp >= 2) {
+				if (razerToy == true) {
+					printf("이미 구매했습니다.\n");
+				}
+				printf("레이저 포인트를 구매했습니다.\n");
+				cp -= 2;
+				printf("보유 CP %d 포인트", cp);
+				razerToy = true;
+
+			}
+			else {
+				printf("CP가 부족합니다.");
+			}
+			Sleep(500);
+			system("cls");
+			break;
+		case 3:
+			if (cp >= 4) {
+				if (hasScratcher == true) {
+					printf("이미 구매했습니다.\n");
+				}
+				printf("스크래처를 구매했습니다.\n");
+				cp -= 4;
+				printf("보유 CP %d 포인트", cp);
+				hasScratcher = true;
+				scratcher = rand() % (ROOM_WIDTH - 2) + 2;
+			}
+			else {
+				printf("CP가 부족합니다.");
+			}
+			Sleep(500);
+			system("cls");
+			break;
+		case 4:
+			if (cp >= 6) {
+				if (hasTower == true) {
+					printf("이미 구매했습니다.\n");
+				}
+				printf("캣타워를 구매했습니다.\n");
+				cp -= 6;
+				printf("보유 CP %d 포인트", cp);
+				hasTower = true;
+				catTower = rand() % (ROOM_WIDTH - 2) + 2;
+			}
+			else {
+				printf("CP가 부족합니다.");
+			}
+			Sleep(500);
+			system("cls");
+			break;
+		}
+
+		//돌발 퀘스트 
+		if (gameTurn % 3 == 0) {
+			printf("랜덤 이벤트 발생!\n");
+			int choice;
+			int event = rand() % 3 + 1;
+			printf("%s가 갑자기 사라졌습니다.\n", name);
+			printf("어디를 찾아볼까요.\n");
+			printf("1. 주방\n2. 거실\n3. 화장실\n>>");
+			do {
+				printf(">> ");
+				scanf_s("%d", &choice);
+				if (choice < 1 || choice > 3) {
+					printf("잘못된 입력입니다. 1~3 사이의 숫자를 입력하세요.\n");
+				}
+			} while (choice < 1 || choice > 3);
+
+			printf("1~3 사이의 숫자를 입력하세요.\n>> ");
+			if (choice == event) {
+				printf("%s를 찾았습니다.\n", name);
+				printf("기분이 좋아집니다.\n");
+				if (feel < 4) {
+					feel++;
+				}
+				if (relation < 4) {
+					relation++;
+				}
+				Sleep(500);
+				system("cls");
+			}
+			else {
+				printf("%s를 찾지 못했습니다.\n", name);
+				printf("기분이 매우 나빠집니다.\n");
+				if (feel > 0) {
+					feel--;
+				}
+				if (relation > 0) {
+					relation--;
+				}
+				Sleep(500);
+				system("cls");
+			}
+		}
+
 	}
 	Sleep(2500);
 	system("cls");
